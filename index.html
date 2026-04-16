@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>leads profile</title>
+
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/profilepicture.png">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    background: black;
+    color: white;
+}
+
+/* ENTER */
+#enterScreen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(18px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 999;
+}
+
+/* VIDEO */
+#bgVideo {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(12px) brightness(0.6);
+    z-index: 0;
+    transform: scale(1.05);
+}
+
+/* OVERLAY */
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.35);
+    z-index: 1;
+}
+
+/* RAIN */
+#rain {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* CARD */
+.card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 420px;
+    max-width: 90%;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    z-index: 3;
+}
+
+#pfp {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+/* FIX LINK BLUE TEXT COMPLETELY */
+a {
+    color: inherit;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+a:focus { outline: none; }
+
+/* SOCIALS */
+.socials img {
+    width: 32px;
+    margin: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.socials img:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 6px white);
+}
+
+/* MUSIC */
+.player {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+}
+
+/* SONG BUTTONS (FIXED NO STRETCH) */
+.musicBtns {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.musicBtns img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+}
+
+.musicBtns img:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 8px white);
+}
+
+/* VIEW */
+#views {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    opacity: 0.7;
+    z-index: 3;
+}
+
+/* DISCORD */
+#discordModal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+}
+
+.discordBox {
+    width: 320px;
+    padding: 20px;
+    border-radius: 16px;
+    background: rgba(20,20,20,0.95);
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div id="enterScreen">click to enter</div>
+
+<video id="bgVideo" autoplay muted loop playsinline>
+    <source src="https://files.catbox.moe/d9abwp.mp4">
+</video>
+
+<div id="overlay"></div>
+<canvas id="rain"></canvas>
+
+<div class="card">
+
+    <img id="pfp" src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/profilepicture.png">
+
+    <h2>lead</h2>
+    <p>wsg its lead im just a chill guy rlly</p>
+
+    <div class="socials">
+
+        <a href="https://github.com/ayytrix"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/whitegh.png"></a>
+        <a href="https://www.youtube.com/@aytr_x"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/yt%20icon.png"></a>
+        <a onclick="openDiscord()"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/dcwhite.png"></a>
+        <a href="https://open.spotify.com/user/31pn57izmi7wputttltz7b3lsggy"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/Spotify_Icon_RGB_White.png"></a>
+
+        <!-- TikTok FIX -->
+        <a href="https://www.tiktok.com/@thetoxicchemical">
+            <img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/image-removebg-preview(32).png">
+        </a>
+
+    </div>
+
+    <div id="discord">Loading Discord...</div>
+
+    <div class="player">
+        <div id="songName">No song</div>
+
+        <div class="musicBtns">
+            <img onclick="prevSong()" src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/rewind.png">
+            <img onclick="togglePlay()" src="https://cdn-icons-png.flaticon.com/512/727/727245.png">
+            <img onclick="nextSong()" src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/fastforward-removebg-preview.png">
+        </div>
+    </div>
+
+</div>
+
+<div id="views">Views: 0</div>
+
+<audio id="audio"></audio>
+
+<!-- DISCORD -->
+<div id="discordModal" onclick="closeDiscord(event)">
+    <div class="discordBox">
+        <h2>Discord</h2>
+        <p id="dcText">Loading...</p>
+    </div>
+</div>
+
+<script>
+
+let audio = document.getElementById("audio");
+let started = false;
+
+/* ENTER */
+document.getElementById("enterScreen").onclick = () => {
+    document.getElementById("enterScreen").style.display = "none";
+    started = true;
+    audio.play();
+    startRain();
+};
+
+/* VIEWS */
+let views = localStorage.getItem("views") || 0;
+views++;
+localStorage.setItem("views", views);
+document.getElementById("views").innerText = "Views: " + views;
+
+/* MUSIC */
+let songs = ["music/song1.mp3","music/song2.mp3","music/song3.mp3"];
+let index = 0;
+audio.src = songs[index];
+
+function updateSong(){
+    document.getElementById("songName").innerText =
+        songs[index].split("/").pop();
+}
+
+function togglePlay(){
+    if(!started) return;
+    audio.paused ? audio.play() : audio.pause();
+}
+
+function nextSong(){
+    index = (index + 1) % songs.length;
+    audio.src = songs[index];
+    if(started) audio.play();
+    updateSong();
+}
+
+function prevSong(){
+    index = (index - 1 + songs.length) % songs.length;
+    audio.src = songs[index];
+    if(started) audio.play();
+    updateSong();
+}
+
+updateSong();
+
+/* LANYARD FIX (SAFE) */
+const DISCORD_ID = "1411506062623903896";
+
+async function loadDiscord(){
+    try {
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`);
+        const json = await res.json();
+
+        const d = json?.data;
+        if(!d){
+            document.getElementById("discord").innerText = "Offline";
+            document.getElementById("dcText").innerText = "Offline";
+            return;
+        }
+
+        const status = d.discord_status || "offline";
+
+        document.getElementById("discord").innerText = status;
+        document.getElementById("dcText").innerText =
+            `User: localscript.lua\nStatus: ${status}`;
+
+    } catch {
+        document.getElementById("discord").innerText = "Offline";
+        document.getElementById("dcText").innerText = "Offline";
+    }
+}
+
+loadDiscord();
+setInterval(loadDiscord, 5000);
+
+/* DISCORD MODAL */
+function openDiscord(){
+    document.getElementById("discordModal").style.display = "flex";
+}
+function closeDiscord(e){
+    if(e.target.id === "discordModal"){
+        document.getElementById("discordModal").style.display = "none";
+    }
+}
+
+/* RAIN */
+const canvas = document.getElementById("rain");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+let drops = Array(120).fill().map(()=>({
+    x: Math.random()*innerWidth,
+    y: Math.random()*innerHeight,
+    len: Math.random()*20+10,
+    speed: Math.random()*4+4
+}));
+
+function rain(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle="rgba(174,194,224,0.5)";
+    ctx.lineWidth=1;
+
+    for(let d of drops){
+        ctx.beginPath();
+        ctx.moveTo(d.x,d.y);
+        ctx.lineTo(d.x,d.y+d.len);
+        ctx.stroke();
+
+        d.y += d.speed;
+        if(d.y>canvas.height){
+            d.y=-20;
+            d.x=Math.random()*canvas.width;
+        }
+    }
+
+    requestAnimationFrame(rain);
+}
+function startRain(){ rain(); }
+
+/* TITLE ANIMATION RESTORED */
+const titles=["leads profile","yoo its lead","dis shi my space","wsg"];
+let tIndex=0,charIndex=0,deleting=false;
+
+function typeTitle(){
+    const c=titles[tIndex];
+
+    if(!deleting){
+        document.title=c.substring(0,++charIndex);
+        if(charIndex>=c.length){
+            deleting=true;
+            setTimeout(typeTitle,900);
+            return;
+        }
+    } else {
+        document.title=c.substring(0,--charIndex);
+        if(charIndex<=0){
+            deleting=false;
+            tIndex=(tIndex+1)%titles.length;
+        }
+    }
+
+    setTimeout(typeTitle,deleting?60:100);
+}
+typeTitle();
+
+</script>
+
+</body>
+</html>
