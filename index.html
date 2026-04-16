@@ -15,7 +15,7 @@ body {
     color: white;
 }
 
-/* ENTER */
+/* ENTER SCREEN */
 #enterScreen {
     position: fixed;
     width: 100%;
@@ -28,9 +28,18 @@ body {
     font-size: 28px;
     cursor: pointer;
     z-index: 999;
+
+    opacity: 1;
+    transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
-/* VIDEO */
+#enterScreen.fade {
+    opacity: 0;
+    transform: scale(1.1);
+    pointer-events: none;
+}
+
+/* BACKGROUND */
 #bgVideo {
     position: fixed;
     width: 100%;
@@ -41,7 +50,6 @@ body {
     transform: scale(1.05);
 }
 
-/* OVERLAY */
 #overlay {
     position: fixed;
     width: 100%;
@@ -50,7 +58,6 @@ body {
     z-index: 1;
 }
 
-/* RAIN */
 #rain {
     position: fixed;
     width: 100%;
@@ -81,14 +88,6 @@ body {
     border-radius: 50%;
 }
 
-/* FIX LINK BLUE TEXT COMPLETELY */
-a {
-    color: inherit;
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-}
-a:focus { outline: none; }
-
 /* SOCIALS */
 .socials img {
     width: 32px;
@@ -109,7 +108,6 @@ a:focus { outline: none; }
     background: rgba(255,255,255,0.08);
 }
 
-/* SONG BUTTONS (FIXED NO STRETCH) */
 .musicBtns {
     display: flex;
     justify-content: center;
@@ -120,15 +118,7 @@ a:focus { outline: none; }
 .musicBtns img {
     width: 40px;
     height: 40px;
-    object-fit: contain;
     cursor: pointer;
-    transition: 0.2s;
-    user-select: none;
-}
-
-.musicBtns img:hover {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 8px white);
 }
 
 /* VIEW */
@@ -166,9 +156,8 @@ a:focus { outline: none; }
 
 <div id="enterScreen">click to enter</div>
 
-<video id="bgVideo" autoplay muted loop playsinline>
-    <source src="https://files.catbox.moe/d9abwp.mp4">
-</video>
+<!-- VIDEO (NOW CORRECT) -->
+<video id="bgVideo" autoplay muted loop playsinline></video>
 
 <div id="overlay"></div>
 <canvas id="rain"></canvas>
@@ -181,17 +170,11 @@ a:focus { outline: none; }
     <p>wsg its lead im just a chill guy rlly</p>
 
     <div class="socials">
-
         <a href="https://github.com/ayytrix"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/whitegh.png"></a>
         <a href="https://www.youtube.com/@aytr_x"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/yt%20icon.png"></a>
         <a onclick="openDiscord()"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/dcwhite.png"></a>
         <a href="https://open.spotify.com/user/31pn57izmi7wputttltz7b3lsggy"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/Spotify_Icon_RGB_White.png"></a>
-
-        <!-- TikTok FIX -->
-        <a href="https://www.tiktok.com/@thetoxicchemical">
-            <img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/image-removebg-preview(32).png">
-        </a>
-
+        <a href="https://www.tiktok.com/@thetoxicchemical"><img src="https://raw.githubusercontent.com/ayytrix/thisshitscrazyy/refs/heads/main/assets/icons/image-removebg-preview(32).png"></a>
     </div>
 
     <div id="discord">Loading Discord...</div>
@@ -212,7 +195,6 @@ a:focus { outline: none; }
 
 <audio id="audio"></audio>
 
-<!-- DISCORD -->
 <div id="discordModal" onclick="closeDiscord(event)">
     <div class="discordBox">
         <h2>Discord</h2>
@@ -227,9 +209,28 @@ let started = false;
 
 /* ENTER */
 document.getElementById("enterScreen").onclick = () => {
-    document.getElementById("enterScreen").style.display = "none";
+    const enter = document.getElementById("enterScreen");
+    const vid = document.getElementById("bgVideo");
+
+    enter.classList.add("fade");
+
+    setTimeout(() => {
+        enter.style.display = "none";
+    }, 800);
+
     started = true;
-    audio.play();
+
+    audio.play().catch(() => {});
+
+    /* VIDEO FIX */
+    vid.src = "https://ufile.io/86v0c505";
+    vid.muted = true;
+    vid.loop = true;
+
+    vid.play().catch(() => {
+        setTimeout(() => vid.play(), 300);
+    });
+
     startRain();
 };
 
@@ -270,30 +271,23 @@ function prevSong(){
 
 updateSong();
 
-/* LANYARD FIX (SAFE) */
+/* DISCORD */
 const DISCORD_ID = "1411506062623903896";
 
 async function loadDiscord(){
     try {
         const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`);
         const json = await res.json();
-
         const d = json?.data;
-        if(!d){
-            document.getElementById("discord").innerText = "Offline";
-            document.getElementById("dcText").innerText = "Offline";
-            return;
-        }
 
-        const status = d.discord_status || "offline";
+        document.getElementById("discord").innerText =
+            d?.discord_status || "offline";
 
-        document.getElementById("discord").innerText = status;
         document.getElementById("dcText").innerText =
-            `User: localscript.lua\nStatus: ${status}`;
+            d ? `User: localscript.lua\nStatus: ${d.discord_status}` : "Offline";
 
     } catch {
         document.getElementById("discord").innerText = "Offline";
-        document.getElementById("dcText").innerText = "Offline";
     }
 }
 
@@ -304,6 +298,7 @@ setInterval(loadDiscord, 5000);
 function openDiscord(){
     document.getElementById("discordModal").style.display = "flex";
 }
+
 function closeDiscord(e){
     if(e.target.id === "discordModal"){
         document.getElementById("discordModal").style.display = "none";
@@ -330,6 +325,7 @@ let drops = Array(120).fill().map(()=>({
 
 function rain(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
+
     ctx.strokeStyle="rgba(174,194,224,0.5)";
     ctx.lineWidth=1;
 
@@ -340,41 +336,28 @@ function rain(){
         ctx.stroke();
 
         d.y += d.speed;
-        if(d.y>canvas.height){
-            d.y=-20;
-            d.x=Math.random()*canvas.width;
+
+        if(d.y > canvas.height){
+            d.y = -20;
+            d.x = Math.random()*canvas.width;
         }
     }
 
     requestAnimationFrame(rain);
 }
-function startRain(){ rain(); }
 
-/* TITLE ANIMATION RESTORED */
-const titles=["leads profile","yoo its lead","dis shi my space","wsg"];
-let tIndex=0,charIndex=0,deleting=false;
-
-function typeTitle(){
-    const c=titles[tIndex];
-
-    if(!deleting){
-        document.title=c.substring(0,++charIndex);
-        if(charIndex>=c.length){
-            deleting=true;
-            setTimeout(typeTitle,900);
-            return;
-        }
-    } else {
-        document.title=c.substring(0,--charIndex);
-        if(charIndex<=0){
-            deleting=false;
-            tIndex=(tIndex+1)%titles.length;
-        }
-    }
-
-    setTimeout(typeTitle,deleting?60:100);
+function startRain(){
+    requestAnimationFrame(rain);
 }
-typeTitle();
+
+/* TITLE */
+const titles = ["leads profile", "yoo its lead", "dis shi my space", "wsg"];
+let i = 0;
+
+setInterval(() => {
+    document.title = titles[i];
+    i = (i + 1) % titles.length;
+}, 2500);
 
 </script>
 
